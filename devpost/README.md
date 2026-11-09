@@ -8,6 +8,8 @@ An augmented-reality learning environment that introduces beginners to the ESP32
 
 **YouTube demo:** `https://youtu.be/BTZRw7oxU3E`
 
+**GitHub Repo URL** `https://github.com/katGhost/electronics-studio`
+
 ## What it does
 
 Robotics Workshop AR presents a virtual electronics workbench containing an ESP32 development board and electronic components. It is designed to make introductory electronics concepts easier to explore in a spatial learning environment.
@@ -27,7 +29,7 @@ The project focuses on an introductory lesson around identifying the ESP32 and u
 - The working interactions demonstrated in the linked video
 - An introductory ESP32 pin-identification lesson interface
 
-**Scope clarification:** Some imported components are currently visual assets rather than functioning selectable objects. The demo clearly shows only interactions that have been verified in the final preview.
+**Scope clarification:** Some imported components are currently visual assets rather than functioning selectable objects. The demo clearly shows only interactions that have been verified in the final preview. **Using free tiered Agents contributed to limited functionality**
 
 ## What I learned
 
@@ -61,11 +63,6 @@ List the source, creator, and licence for every third-party 3D model, texture, s
 - Creator: `Aficionado`
 - Licence: `CC Attribution`
 
-## Submission checklist
+## Author
 
-- [ ] Replace the YouTube placeholder with the **public** demo URL.
-- [ ] Add 2–4 clear screenshots to `assets/screenshots/`.
-- [ ] Verify third-party asset attribution and licence requirements.
-- [ ] Confirm the repository is public and includes the complete Lens Studio project.
-- [ ] Confirm the `devpost/` folder is committed and pushed.
-- [ ] Check that the public YouTube video plays and is under three minutes.
+**Andries N Mogashoa** | Backend AI Engineer @FlyRankAI
