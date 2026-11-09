@@ -2379,7 +2379,7 @@
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: 0.000000, y: 19.889458, z: -60.000000}
+    Position: {x: 0.000000, y: 25.000000, z: -60.000000}
     Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
     Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
     HasSegmentScaleCompensation: false
@@ -2398,6 +2398,7 @@
     - !<own> bd96b33c-da3f-48a0-9ff7-6b9dd119ba05
     - !<own> 8db9e90e-254c-4ec4-9468-c03608700e21
     - !<own> 4fe54427-4063-4452-a24c-c75de4b262f9
+    - !<own> 4e378467-3dfd-4fa1-9b4e-ce8030026aaf
     - !<own> d4de20ce-3e13-428a-be67-6e989fd6bdd9
   Components:
     - !<own> bffa372f-de2d-4e60-9593-52bdefd4f7cb
@@ -3116,6 +3117,7 @@
     []
   Components:
     - !<own> 7435c787-92bd-4909-83e0-6d28d42da033
+    - !<own> cab1f075-d497-4db9-b8eb-870ce79899c9
 - !<SceneObject/2f00db08-ae60-4cea-abb0-974403440168>
   PrefabRemaps:
     []
@@ -4757,9 +4759,9 @@
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: 6.870701, y: 0.004482, z: -54.186897}
+    Position: {x: 11.936943, y: -19.867146, z: 4.084457}
     Rotation: {x: -90.000000, y: -0.000000, z: 0.000000}
-    Scale: {x: 446.807434, y: 735.344055, z: 660.166687}
+    Scale: {x: 1.563826, y: 2.573704, z: 2.310583}
     HasSegmentScaleCompensation: false
   Children:
     - !<own> a2493adc-3201-4bba-a34e-6e919134b205
@@ -5544,7 +5546,6 @@
     - !<own> f7fea587-ef33-4929-b0fe-71dee4a93594
     - !<own> 03de34a3-e73b-481e-a327-a19b89c2a6d5
     - !<own> 77971abe-5008-4028-a97d-bddafa1fa65a
-    - !<own> 4e378467-3dfd-4fa1-9b4e-ce8030026aaf
     - !<own> cc9a6ea5-1300-484a-8440-bd203907bfe0
     - !<own> 0829641d-1f99-468b-add6-3652559c838d
     - !<own> 5d541182-2ac9-4202-8f78-b9e1fc36a411
@@ -11798,6 +11799,22 @@
     - !<own> 0a0e1d78-8246-4f5b-ab1a-fdc51837956d
   Components:
     []
+- !<ScriptComponent/cab1f075-d497-4db9-b8eb-870ce79899c9>
+  PrefabRemaps:
+    []
+  Name: TapInteraction
+  Enabled: true
+  ScriptAsset: !<reference> 16092adf-3008-490e-9454-95e711bfa440
+  ScriptInputsDefault:
+    {}
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      {}
+  ScriptTypes:
+    "":
+      {}
 - !<SceneObject/cb59a663-5d66-43ee-9a6c-eb6f37b229c1>
   PrefabRemaps:
     []
@@ -11861,7 +11878,7 @@
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: -4.987787, y: 2.473053, z: -60.187653}
+    Position: {x: 11.877769, y: 2.875765, z: -55.930515}
     Rotation: {x: -90.000000, y: -0.000000, z: 0.000000}
     Scale: {x: 274.476715, y: 403.105408, z: 274.476715}
     HasSegmentScaleCompensation: false
@@ -14984,7 +15001,7 @@
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Position: {x: 0.000000, y: 0.000000, z: -20.529335}
     Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
     Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
     HasSegmentScaleCompensation: false
