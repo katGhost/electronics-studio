@@ -1,0 +1,214 @@
+import {TapInteraction} from "./TapInteraction";
+
+type PartId = "esp32" | "gpio2" | "gnd";
+
+interface PartInfo {
+    id: PartId;
+    objectName: string;
+    displayName: string;
+    functionLabel: string;
+    explanation: string;
+    legend: string;
+    colliderSize: vec3;
+}
+
+@component
+export class RoboticsWorkshopMain extends BaseScriptComponent {
+    private readonly parts: PartInfo[] = [
+        {
+            id: "esp32",
+            objectName: "ESP32_Board",
+            displayName: "ESP32",
+            functionLabel: "Microcontroller board",
+            explanation:
+                "This is the ESP32 — the brain of your project. Programs run on this board and use its pins to talk to LEDs, sensors, and other parts.",
+            legend: "ESP32 = the board that runs your code and drives the pins",
+            colliderSize: new vec3(18, 6, 10),
+        },
+        {
+            id: "gpio2",
+            objectName: "GPIO2_Pin",
+            displayName: "GPIO2",
+            functionLabel: "Digital I/O pin",
+            explanation:
+                "GPIO2 is a general-purpose pin. Your code can set it HIGH (on) or LOW (off) to control things like an LED. The green marker helps you find it.",
+            legend: "GPIO2 (green) = drive signal out to the circuit",
+            colliderSize: new vec3(3, 4, 3),
+        },
+        {
+            id: "gnd",
+            objectName: "GND_Pin",
+            displayName: "GND",
+            functionLabel: "Ground / return path",
+            explanation:
+                "GND is ground — the return path for electric current. Every simple circuit needs a path back to GND, or nothing will work.",
+            legend: "GND (black) = return path that completes the circuit",
+            colliderSize: new vec3(3, 4, 3),
+        },
+    ];
+
+    private lessonTitle: Text3D | null = null;
+    private lessonInstructions: Text3D | null = null;
+    private pinLegend: Text3D | null = null;
+
+    private partById: {[key: string]: PartInfo} = {};
+    private objectById: {[key: string]: SceneObject} = {};
+    private baseMaterialById: {[key: string]: Material} = {};
+    private identified: {[key: string]: boolean} = {};
+    private currentSelection: PartId | null = null;
+
+    onAwake() {
+        // Create TapInteraction during onAwake so its OnStartEvent still fires.
+        this.resolveUi();
+        this.prepareSelectables();
+        this.createEvent("OnStartEvent").bind(() => this.bindSelection());
+    }
+
+    private resolveUi() {
+        const root = this.getSceneObject();
+        this.lessonTitle = this.getText3D(this.findByName(root, "LessonTitle"));
+        // Scene object is named LessonInstructions (plural)
+        this.lessonInstructions =
+            this.getText3D(this.findByName(root, "LessonInstructions")) ||
+            this.getText3D(this.findByName(root, "LessonInstruction"));
+        this.pinLegend = this.getText3D(this.findByName(root, "PinLegend"));
+        this.showIntro();
+    }
+
+    private prepareSelectables() {
+        const root = this.getSceneObject();
+        for (const part of this.parts) {
+            this.partById[part.id] = part;
+            const target = this.findByName(root, part.objectName);
+            if (!target) {
+                print("RoboticsWorkshopMain: missing object " + part.objectName);
+                continue;
+            }
+            this.objectById[part.id] = target;
+            this.ensureCollider(target, part.colliderSize);
+            this.cacheBaseMaterial(part.id, target);
+
+            let tap = target.getComponent(TapInteraction.getTypeName()) as TapInteraction;
+            if (!tap) {
+                tap = target.createComponent(TapInteraction.getTypeName()) as TapInteraction;
+            }
+        }
+    }
+
+    private bindSelection() {
+        for (const part of this.parts) {
+            const target = this.objectById[part.id];
+            if (!target) continue;
+            const tap = target.getComponent(TapInteraction.getTypeName()) as TapInteraction;
+            if (!tap) continue;
+            const partId = part.id;
+            tap.onTap.add(() => this.selectPart(partId));
+        }
+        print("RoboticsWorkshopMain: pin identification ready");
+    }
+
+    private selectPart(id: PartId) {
+        const part = this.partById[id];
+        if (!part) return;
+
+        if (this.currentSelection && this.currentSelection !== id) {
+            this.clearHighlight(this.currentSelection);
+        }
+
+        this.currentSelection = id;
+        this.identified[id] = true;
+        this.applyHighlight(id);
+        this.showPartInfo(part);
+    }
+
+    private showIntro() {
+        this.setText(this.lessonTitle, "LESSON 1  |  Identify ESP32 Pins");
+        this.setText(
+            this.lessonInstructions,
+            "Pinch the ESP32 board, then GPIO2 and GND to learn each one's name and job.",
+        );
+        this.setText(
+            this.pinLegend,
+            "Green marker = GPIO2    Black marker = GND    Blue = ESP32 board",
+        );
+    }
+
+    private showPartInfo(part: PartInfo) {
+        this.setText(this.lessonTitle, part.displayName + "  |  " + part.functionLabel);
+        this.setText(this.lessonInstructions, part.explanation);
+        this.setText(this.pinLegend, part.legend);
+
+        if (this.identified["gpio2"] && this.identified["gnd"] && this.identified["esp32"]) {
+            this.setText(
+                this.pinLegend,
+                part.legend + "  ·  Nice work — you identified the board and both pins.",
+            );
+        }
+
+        print("Selected " + part.displayName + ": " + part.functionLabel);
+    }
+
+    private ensureCollider(target: SceneObject, size: vec3) {
+        let collider = target.getComponent("Physics.ColliderComponent") as ColliderComponent;
+        if (!collider) {
+            collider = target.createComponent("Physics.ColliderComponent") as ColliderComponent;
+        }
+        const shape = Shape.createBoxShape();
+        shape.size = size;
+        collider.shape = shape;
+    }
+
+    private cacheBaseMaterial(id: PartId, target: SceneObject) {
+        const visual = target.getComponent("Component.RenderMeshVisual") as RenderMeshVisual;
+        if (visual && visual.mainMaterial) {
+            this.baseMaterialById[id] = visual.mainMaterial;
+        }
+    }
+
+    private applyHighlight(id: PartId) {
+        const target = this.objectById[id];
+        const base = this.baseMaterialById[id];
+        if (!target || !base) return;
+        const visual = target.getComponent("Component.RenderMeshVisual") as RenderMeshVisual;
+        if (!visual) return;
+
+        const highlight = base.clone();
+        const color = base.mainPass.baseColor as vec4;
+        highlight.mainPass.baseColor = new vec4(
+            Math.min(color.r * 1.45 + 0.15, 1),
+            Math.min(color.g * 1.45 + 0.15, 1),
+            Math.min(color.b * 1.45 + 0.15, 1),
+            color.a,
+        );
+        visual.mainMaterial = highlight;
+    }
+
+    private clearHighlight(id: PartId) {
+        const target = this.objectById[id];
+        const base = this.baseMaterialById[id];
+        if (!target || !base) return;
+        const visual = target.getComponent("Component.RenderMeshVisual") as RenderMeshVisual;
+        if (!visual) return;
+        visual.mainMaterial = base;
+    }
+
+    private getText3D(obj: SceneObject | null): Text3D | null {
+        if (!obj) return null;
+        return obj.getComponent("Component.Text3D") as Text3D;
+    }
+
+    private setText(text3d: Text3D | null, value: string) {
+        if (text3d) {
+            text3d.text = value;
+        }
+    }
+
+    private findByName(parent: SceneObject, name: string): SceneObject | null {
+        if (parent.name === name) return parent;
+        for (let i = 0; i < parent.getChildrenCount(); i++) {
+            const found = this.findByName(parent.getChild(i), name);
+            if (found) return found;
+        }
+        return null;
+    }
+}
