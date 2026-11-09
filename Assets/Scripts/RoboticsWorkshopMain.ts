@@ -23,7 +23,8 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
             explanation:
                 "This is the ESP32 — the brain of your project. Programs run on this board and use its pins to talk to LEDs, sensors, and other parts.",
             legend: "ESP32 = the board that runs your code and drives the pins",
-            colliderSize: new vec3(18, 6, 10),
+            // BoxShape.size is local to the SceneObject; compensate for its scale.
+            colliderSize: new vec3(2, 6, 2),
         },
         {
             id: "gpio2",
@@ -33,7 +34,7 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
             explanation:
                 "GPIO2 is a general-purpose pin. Your code can set it HIGH (on) or LOW (off) to control things like an LED. The green marker helps you find it.",
             legend: "GPIO2 (green) = drive signal out to the circuit",
-            colliderSize: new vec3(3, 4, 3),
+            colliderSize: new vec3(1.5, 1.5, 1.5),
         },
         {
             id: "gnd",
@@ -43,7 +44,7 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
             explanation:
                 "GND is ground — the return path for electric current. Every simple circuit needs a path back to GND, or nothing will work.",
             legend: "GND (black) = return path that completes the circuit",
-            colliderSize: new vec3(3, 4, 3),
+            colliderSize: new vec3(1.5, 1.5, 1.5),
         },
     ];
 
@@ -54,6 +55,7 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
     private partById: {[key: string]: PartInfo} = {};
     private objectById: {[key: string]: SceneObject} = {};
     private baseMaterialById: {[key: string]: Material} = {};
+    private highlightMaterialById: {[key: string]: Material} = {};
     private identified: {[key: string]: boolean} = {};
     private currentSelection: PartId | null = null;
 
@@ -102,7 +104,7 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
             const tap = target.getComponent(TapInteraction.getTypeName()) as TapInteraction;
             if (!tap) continue;
             const partId = part.id;
-            tap.onTap.add(() => this.selectPart(partId));
+            tap.setOnTap(() => this.selectPart(partId));
         }
         print("RoboticsWorkshopMain: pin identification ready");
     }
@@ -172,7 +174,11 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
         const visual = target.getComponent("Component.RenderMeshVisual") as RenderMeshVisual;
         if (!visual) return;
 
-        const highlight = base.clone();
+        let highlight = this.highlightMaterialById[id];
+        if (!highlight) {
+            highlight = base.clone();
+            this.highlightMaterialById[id] = highlight;
+        }
         const color = base.mainPass.baseColor as vec4;
         highlight.mainPass.baseColor = new vec4(
             Math.min(color.r * 1.45 + 0.15, 1),

@@ -11,6 +11,8 @@ import Event from "SpectaclesInteractionKit.lspkg/Utils/Event";
 export class TapInteraction extends BaseScriptComponent {
     public onTap: Event<InteractorEvent> = new Event<InteractorEvent>();
     private interactable: Interactable;
+    private initialized: boolean = false;
+    private callback: ((event: InteractorEvent) => void) | null = null;
 
     onAwake() {
         let collider = this.getSceneObject().getComponent("Physics.ColliderComponent") as ColliderComponent;
@@ -29,9 +31,25 @@ export class TapInteraction extends BaseScriptComponent {
         this.interactable.targetingMode = 3;
 
         this.createEvent("OnStartEvent").bind(() => {
-            this.interactable.onTriggerStart.add((event: InteractorEvent) => {
-                this.onTap.invoke(event);
-            });
+            this.initializeInteraction();
         });
+    }
+
+    /** Replaces the selection listener, so repeated setup cannot accumulate callbacks. */
+    public setOnTap(callback: (event: InteractorEvent) => void) {
+        this.callback = callback;
+        if (this.initialized) {
+            this.onTap.remove(callback);
+            this.onTap.add(callback);
+        }
+    }
+
+    private initializeInteraction() {
+        if (this.initialized) return;
+        this.initialized = true;
+        this.interactable.onTriggerStart.add((event: InteractorEvent) => {
+            this.onTap.invoke(event);
+        });
+        if (this.callback) this.onTap.add(this.callback);
     }
 }
