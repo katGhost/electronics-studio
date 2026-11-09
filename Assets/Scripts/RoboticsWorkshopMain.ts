@@ -1,6 +1,6 @@
 import {TapInteraction} from "./TapInteraction";
 
-type PartId = "esp32" | "gpio2" | "gnd";
+type PartId = "esp32" | "gpio2" | "gnd" | "resistor" | "led";
 
 interface PartInfo {
     id: PartId;
@@ -46,11 +46,30 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
             legend: "GND (black) = return path that completes the circuit",
             colliderSize: new vec3(1.5, 1.5, 1.5),
         },
+        {
+            id: "resistor",
+            objectName: "Resistor",
+            displayName: "Resistor",
+            functionLabel: "Current-limiting component",
+            explanation: "The resistor limits current through the LED and helps protect it from too much current.",
+            legend: "Resistor = limits current before it reaches the LED",
+            colliderSize: new vec3(1.5, 1.5, 1.5),
+        },
+        {
+            id: "led",
+            objectName: "LED",
+            displayName: "LED",
+            functionLabel: "Light-emitting diode",
+            explanation: "An LED lets current pass in one direction. Its anode is the positive side; its cathode returns toward GND.",
+            legend: "LED = anode faces the resistor; cathode returns to GND",
+            colliderSize: new vec3(1.25, 1.25, 1.25),
+        },
     ];
 
     private lessonTitle: Text3D | null = null;
     private lessonInstructions: Text3D | null = null;
     private pinLegend: Text3D | null = null;
+    private circuitFlow: Text3D | null = null;
 
     private partById: {[key: string]: PartInfo} = {};
     private objectById: {[key: string]: SceneObject} = {};
@@ -65,6 +84,9 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
         {title: "Understanding GND", instructions: "GND is the circuit's shared ground and return path. A complete circuit needs a path from its output back to ground.", part: "gnd"},
         {title: "How the parts work together", instructions: "In a simple LED circuit, GPIO2 supplies the control signal through a current-limiting resistor and LED, then the path returns to GND.", part: null},
     ];
+    private readonly circuitSequence: PartId[] = ["gpio2", "resistor", "led", "gnd"];
+    private circuitProgress: number = 0;
+    private ledLit: boolean = false;
 
     onAwake() {
         // Create TapInteraction during onAwake so its OnStartEvent still fires.
@@ -74,6 +96,7 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
             this.bindSelection();
             this.bindLessonNavigation();
             this.showLesson();
+            this.updateCircuitFeedback();
         });
     }
 
@@ -85,6 +108,7 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
             this.getText3D(this.findByName(root, "LessonInstructions")) ||
             this.getText3D(this.findByName(root, "LessonInstruction"));
         this.pinLegend = this.getText3D(this.findByName(root, "PinLegend"));
+        this.circuitFlow = this.getText3D(this.findByName(root, "CircuitFlow"));
         this.showIntro();
     }
 
@@ -167,6 +191,55 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
         this.identified[id] = true;
         this.applyHighlight(id);
         this.showPartInfo(part);
+        this.advanceCircuit(id);
+    }
+
+    private advanceCircuit(id: PartId) {
+        const expected = this.circuitSequence[this.circuitProgress];
+        if (!expected) {
+            if (id === "gpio2") this.resetCircuit();
+            return;
+        }
+        if (id === expected) {
+            this.circuitProgress++;
+            if (this.circuitProgress === this.circuitSequence.length) this.setLedLit(true);
+        } else if (this.circuitSequence.indexOf(id) >= 0) {
+            this.setText(this.circuitFlow, "Not yet: select " + this.partById[expected].displayName + " next. Circuit progress is unchanged.");
+            return;
+        }
+        this.updateCircuitFeedback();
+    }
+
+    private updateCircuitFeedback() {
+        if (this.circuitProgress === this.circuitSequence.length) {
+            this.setText(this.circuitFlow, "Circuit complete: GPIO2 → Resistor → LED → GND. LED lit. Select GPIO2 to reset.");
+            return;
+        }
+        const next = this.partById[this.circuitSequence[this.circuitProgress]].displayName;
+        this.setText(this.circuitFlow, "Circuit progress: " + this.circuitProgress + "/4. Select " + next + " next. Select GPIO2 after completion to reset.");
+    }
+
+    private resetCircuit() {
+        this.circuitProgress = 0;
+        this.setLedLit(false);
+        this.updateCircuitFeedback();
+    }
+
+    private setLedLit(lit: boolean) {
+        this.ledLit = lit;
+        const led = this.objectById["led"];
+        const visual = led ? led.getComponent("Component.RenderMeshVisual") as RenderMeshVisual : null;
+        const base = this.baseMaterialById["led"];
+        if (!visual || !base) return;
+        if (!lit) {
+            visual.mainMaterial = this.currentSelection === "led" ? this.highlightMaterialById["led"] : base;
+            return;
+        }
+        const litMaterial = base.clone();
+        const color = base.mainPass.baseColor as vec4;
+        litMaterial.mainPass.baseColor = new vec4(1, Math.min(color.g * 1.7 + 0.3, 1), Math.min(color.b * 1.7 + 0.3, 1), color.a);
+        this.highlightMaterialById["led"] = litMaterial;
+        visual.mainMaterial = litMaterial;
     }
 
     private showIntro() {
@@ -232,7 +305,7 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
             Math.min(color.b * 1.45 + 0.15, 1),
             color.a,
         );
-        visual.mainMaterial = highlight;
+        visual.mainMaterial = id === "led" && this.ledLit ? this.highlightMaterialById[id] : highlight;
     }
 
     private clearHighlight(id: PartId) {
@@ -241,7 +314,7 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
         if (!target || !base) return;
         const visual = target.getComponent("Component.RenderMeshVisual") as RenderMeshVisual;
         if (!visual) return;
-        visual.mainMaterial = base;
+        visual.mainMaterial = id === "led" && this.ledLit ? this.highlightMaterialById[id] : base;
     }
 
     private getText3D(obj: SceneObject | null): Text3D | null {
