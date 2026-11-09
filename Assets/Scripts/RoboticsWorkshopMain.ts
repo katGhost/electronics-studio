@@ -58,12 +58,23 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
     private highlightMaterialById: {[key: string]: Material} = {};
     private identified: {[key: string]: boolean} = {};
     private currentSelection: PartId | null = null;
+    private currentLesson: number = 0;
+    private readonly lessons: {title: string; instructions: string; part: PartId | null}[] = [
+        {title: "Introduction to the ESP32", instructions: "The ESP32 is a microcontroller: the small computer that runs a program and controls connected components.", part: "esp32"},
+        {title: "Understanding GPIO2", instructions: "GPIO2 is a digital input/output pin. A program can set it HIGH or LOW to control an external component such as an LED.", part: "gpio2"},
+        {title: "Understanding GND", instructions: "GND is the circuit's shared ground and return path. A complete circuit needs a path from its output back to ground.", part: "gnd"},
+        {title: "How the parts work together", instructions: "In a simple LED circuit, GPIO2 supplies the control signal through a current-limiting resistor and LED, then the path returns to GND.", part: null},
+    ];
 
     onAwake() {
         // Create TapInteraction during onAwake so its OnStartEvent still fires.
         this.resolveUi();
         this.prepareSelectables();
-        this.createEvent("OnStartEvent").bind(() => this.bindSelection());
+        this.createEvent("OnStartEvent").bind(() => {
+            this.bindSelection();
+            this.bindLessonNavigation();
+            this.showLesson();
+        });
     }
 
     private resolveUi() {
@@ -109,6 +120,41 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
         print("RoboticsWorkshopMain: pin identification ready");
     }
 
+    private bindLessonNavigation() {
+        const root = this.getSceneObject();
+        const previous = this.findByName(root, "PreviousLessonButton");
+        const next = this.findByName(root, "NextLessonButton");
+        this.bindNavigationTarget(previous, () => this.navigateLesson(-1));
+        this.bindNavigationTarget(next, () => this.navigateLesson(1));
+        if (!previous || !next) {
+            print("RoboticsWorkshopMain: add PreviousLessonButton and NextLessonButton scene objects to enable lesson navigation");
+        }
+    }
+
+    private bindNavigationTarget(target: SceneObject | null, callback: () => void) {
+        if (!target) return;
+        let tap = target.getComponent(TapInteraction.getTypeName()) as TapInteraction;
+        if (!tap) tap = target.createComponent(TapInteraction.getTypeName()) as TapInteraction;
+        tap.setOnTap(callback);
+    }
+
+    private navigateLesson(direction: number) {
+        const nextLesson = this.currentLesson + direction;
+        if (nextLesson < 0 || nextLesson >= this.lessons.length) return;
+        this.currentLesson = nextLesson;
+        this.showLesson();
+    }
+
+    private showLesson() {
+        const lesson = this.lessons[this.currentLesson];
+        this.setText(this.lessonTitle, "Lesson " + (this.currentLesson + 1) + " of " + this.lessons.length + " | " + lesson.title);
+        this.setText(this.lessonInstructions, lesson.instructions);
+        if (this.currentSelection) this.clearHighlight(this.currentSelection);
+        this.currentSelection = lesson.part;
+        if (lesson.part) this.applyHighlight(lesson.part);
+        this.setText(this.pinLegend, "Use the previous and next lesson controls to continue.");
+    }
+
     private selectPart(id: PartId) {
         const part = this.partById[id];
         if (!part) return;
@@ -136,8 +182,8 @@ export class RoboticsWorkshopMain extends BaseScriptComponent {
     }
 
     private showPartInfo(part: PartInfo) {
-        this.setText(this.lessonTitle, part.displayName + "  |  " + part.functionLabel);
-        this.setText(this.lessonInstructions, part.explanation);
+        this.setText(this.lessonTitle, "Lesson " + (this.currentLesson + 1) + " of " + this.lessons.length + " | " + part.displayName + "  |  " + part.functionLabel);
+        this.setText(this.lessonInstructions, part.explanation + "  " + this.lessons[this.currentLesson].instructions);
         this.setText(this.pinLegend, part.legend);
 
         if (this.identified["gpio2"] && this.identified["gnd"] && this.identified["esp32"]) {

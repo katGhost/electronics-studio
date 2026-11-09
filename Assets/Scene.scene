@@ -316,6 +316,45 @@
   BlendNormals: false
   BlendShapes:
     {}
+- !<Text3D/026f96b3-775d-4096-a575-4fb540b856d6>
+  PrefabRemaps:
+    []
+  Name: Text3D
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    - !<reference> f19fd7ac-c72a-4701-8923-2ac1849cff63
+  Text: Prev
+  Editable: false
+  ShowEditingPreview: true
+  TouchHandler: !<reference> 00000000-0000-0000-0000-000000000000
+  EnableRichText: false
+  SizeToFit: true
+  FontSize: 48.000000
+  ExtrusionDepth: 0.400000
+  ExtrudeDirection: Both
+  FontSource: !<reference> 00000000-0000-0000-0000-000000000000
+  PreferredStyle: Regular
+  LayoutRect:
+    left: -7.500000
+    bottom: -2.250000
+    right: 7.500000
+    top: 2.250000
+  DebugRenderLayoutRect: false
+  OverflowVertical: Overflow
+  OverflowHorizontal: Overflow
+  AdvancedLayout: !<TextAdvancedLayout>
+    ExtentsTarget: !<reference> 00000000-0000-0000-0000-000000000000
+    LetterSpacing: 0.000000
+    LineSpacing: 1.000000
+    CapitalizationOverride: None
+  EnableBatching: false
 - !<SceneObject/02a9047a-f240-4290-afaf-865cd6d8f06e>
   PrefabRemaps:
     []
@@ -1354,6 +1393,24 @@
   BlendNormals: false
   BlendShapes:
     {}
+- !<ColliderComponent/10dabb47-95de-4f38-b0c3-b135cc50dc33>
+  PrefabRemaps:
+    []
+  Name: Physics Collider
+  Enabled: true
+  Shape: !<Box>
+    FitVisual: true
+    Size: {x: 15.000000, y: 15.000000, z: 15.000000}
+  Matter: !<reference> 00000000-0000-0000-0000-000000000000
+  Filter: !<reference> 00000000-0000-0000-0000-000000000000
+  OverlapFilter: !<reference> 00000000-0000-0000-0000-000000000000
+  WorldSettings: !<reference> 00000000-0000-0000-0000-000000000000
+  EnableSmoothing: false
+  PositionTension: 30.000000
+  RotationTension: 30.000000
+  ForceCompound: false
+  Intangible: false
+  ShowCollider: false
 - !<SceneObject/10f60da2-2196-40ad-9e72-8a6bc7e86f35>
   PrefabRemaps:
     []
@@ -1521,6 +1578,22 @@
     []
   Components:
     - !<own> f6efad17-f8e7-4bf5-abf1-016d57bd49d0
+- !<SceneObject/133c78d8-481e-44e3-967c-a53280e86bca>
+  PrefabRemaps:
+    []
+  Name: NextLessonButton
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 16.429295, y: 12.630333, z: 2.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 4.000000, y: 1.000000, z: 0.300000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> da6e7896-dde6-49b7-af05-aa6199228f95
+    - !<own> 3d0dcb33-5962-4406-8bf7-811bf390645d
 - !<SceneObject/13512c41-3cf7-4625-a144-683e69c35b9d>
   PrefabRemaps:
     []
@@ -2396,6 +2469,8 @@
     - !<own> d3e6f508-6ff7-485e-aeae-aab89ac2917a
     - !<own> 893f12c4-ff05-4823-a1b3-11530269ee19
     - !<own> bd96b33c-da3f-48a0-9ff7-6b9dd119ba05
+    - !<own> 133c78d8-481e-44e3-967c-a53280e86bca
+    - !<own> 5008fd0d-63a8-4a1c-94c2-3706dda087ea
     - !<own> 8db9e90e-254c-4ec4-9468-c03608700e21
     - !<own> 4fe54427-4063-4452-a24c-c75de4b262f9
     - !<own> 4e378467-3dfd-4fa1-9b4e-ce8030026aaf
@@ -3175,7 +3250,7 @@
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: 5.000000, y: 14.000000, z: -5.000000}
+    Position: {x: 13.171722, y: 0.015949, z: -2.425064}
     Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
     Scale: {x: 1.400000, y: 2.000000, z: 1.400000}
     HasSegmentScaleCompensation: false
@@ -3904,6 +3979,24 @@
   BlendNormals: false
   BlendShapes:
     {}
+- !<ColliderComponent/3d0dcb33-5962-4406-8bf7-811bf390645d>
+  PrefabRemaps:
+    []
+  Name: Physics Collider
+  Enabled: true
+  Shape: !<Box>
+    FitVisual: true
+    Size: {x: 15.000000, y: 15.000000, z: 15.000000}
+  Matter: !<reference> 00000000-0000-0000-0000-000000000000
+  Filter: !<reference> 00000000-0000-0000-0000-000000000000
+  OverlapFilter: !<reference> 00000000-0000-0000-0000-000000000000
+  WorldSettings: !<reference> 00000000-0000-0000-0000-000000000000
+  EnableSmoothing: false
+  PositionTension: 30.000000
+  RotationTension: 30.000000
+  ForceCompound: false
+  Intangible: false
+  ShowCollider: false
 - !<Text3D/3d3af4a6-cdaa-45e5-8178-d2a9bc7094ef>
   PrefabRemaps:
     []
@@ -4812,6 +4905,22 @@
     []
   Components:
     - !<own> ece047b2-c894-404d-8711-e1f24fcd77f0
+- !<SceneObject/5008fd0d-63a8-4a1c-94c2-3706dda087ea>
+  PrefabRemaps:
+    []
+  Name: PreviousLessonButton
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: -14.076382, y: 12.630333, z: 2.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 4.000000, y: 1.000000, z: 0.300000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 026f96b3-775d-4096-a575-4fb540b856d6
+    - !<own> 10dabb47-95de-4f38-b0c3-b135cc50dc33
 - !<RenderMeshVisual/504a7ce7-2a53-4922-b7d8-a2171a8faca3>
   PrefabRemaps:
     []
@@ -5235,7 +5344,7 @@
   Enabled: true
   Layers: 1
   LocalTransform: !<TransformEntity>
-    Position: {x: -5.000000, y: 14.000000, z: -5.000000}
+    Position: {x: 7.182487, y: 0.465176, z: -5.000000}
     Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
     Scale: {x: 1.400000, y: 2.000000, z: 1.400000}
     HasSegmentScaleCompensation: false
@@ -11065,7 +11174,7 @@
   ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
   ShadowDensity: 1.000000
   Materials:
-    - !<reference> cda54d48-38af-4caf-9c72-c953b7d74112
+    - !<reference> c8aedf62-4c4c-4ced-af1c-8e9996084c74
   Mesh: !<reference> 6ffae98f-163f-4f48-93ac-e4261b590039
   Skin: !<reference> 00000000-0000-0000-0000-000000000000
   BlendShapesEnabled: true
@@ -13448,6 +13557,45 @@
     []
   Components:
     - !<own> a610434a-851d-4f8a-b4f9-bf7687f69918
+- !<Text3D/da6e7896-dde6-49b7-af05-aa6199228f95>
+  PrefabRemaps:
+    []
+  Name: Text3D
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    - !<reference> f19fd7ac-c72a-4701-8923-2ac1849cff63
+  Text: Next
+  Editable: false
+  ShowEditingPreview: true
+  TouchHandler: !<reference> 00000000-0000-0000-0000-000000000000
+  EnableRichText: false
+  SizeToFit: true
+  FontSize: 48.000000
+  ExtrusionDepth: 0.400000
+  ExtrudeDirection: Both
+  FontSource: !<reference> 00000000-0000-0000-0000-000000000000
+  PreferredStyle: Regular
+  LayoutRect:
+    left: -7.500000
+    bottom: -2.250000
+    right: 7.500000
+    top: 2.250000
+  DebugRenderLayoutRect: false
+  OverflowVertical: Overflow
+  OverflowHorizontal: Overflow
+  AdvancedLayout: !<TextAdvancedLayout>
+    ExtentsTarget: !<reference> 00000000-0000-0000-0000-000000000000
+    LetterSpacing: 0.000000
+    LineSpacing: 1.000000
+    CapitalizationOverride: None
+  EnableBatching: false
 - !<RenderMeshVisual/da779250-d192-4c71-8c67-1b4e0055f9cf>
   PrefabRemaps:
     []
